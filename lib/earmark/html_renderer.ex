@@ -15,9 +15,9 @@ defmodule Earmark.HtmlRenderer do
     {contexts, html} =
     mapper.(blocks, &(render_block(&1, put_in(context.options.messages, [])))) |> Enum.unzip()
 
-    all_messages = 
-      contexts 
-      |> Enum.reduce( messages, fn (ctx, messages1) ->  messages1 ++ get_messages(ctx) end) 
+    all_messages =
+      contexts
+      |> Enum.reduce( messages, fn (ctx, messages1) ->  messages1 ++ get_messages(ctx) end)
 
     {put_in(context.options.messages, all_messages), html |> IO.iodata_to_binary()}
   end
@@ -93,7 +93,7 @@ defmodule Earmark.HtmlRenderer do
     end
 
     context4 =  add_trs(context3, rows, "td", aligns, lnb)
-    
+
     {context4, [ context4.value, "</table>\n" ]}
   end
 
@@ -184,9 +184,9 @@ defmodule Earmark.HtmlRenderer do
   def strong(text),        do: "<strong>#{text}</strong>"
   def strikethrough(text), do: "<del>#{text}</del>"
 
-  def link(url, text),        do: ~s[<a href="#{url}">#{text}</a>]
-  def link(url, text, nil),   do: ~s[<a href="#{url}">#{text}</a>]
-  def link(url, text, title), do: ~s[<a href="#{url}" title="#{title}">#{text}</a>]
+  def link(url, text, _context),        do: ~s[<a href="#{url}">#{text}</a>]
+  def link(url, text, nil, _context),   do: ~s[<a href="#{url}">#{text}</a>]
+  def link(url, text, title, _context), do: ~s[<a href="#{url}" title="#{title}">#{text}</a>]
 
   def image(path, alt, nil) do
     ~s[<img src="#{path}" alt="#{alt}"/>]
@@ -213,7 +213,7 @@ defmodule Earmark.HtmlRenderer do
     Enum.reduce(1..length(row), context, add_td_fn(row, tag, aligns, lnb))
   end
 
-  defp add_td_fn(row, tag, aligns, lnb) do 
+  defp add_td_fn(row, tag, aligns, lnb) do
     fn n, ctx ->
       style =
       case Enum.at(aligns, n - 1, :default) do

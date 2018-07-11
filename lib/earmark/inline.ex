@@ -87,7 +87,7 @@
     if match = Regex.run(context.rules.autolink, src) do
       [ match, link, protocol ] = match
       { href, text } = convert_autolink(link, protocol)
-      out = renderer.link(href, text)
+      out = renderer.link(href, text, context)
       { behead(src, match), context, prepend(result, out), lnb }
     end
   end
@@ -228,7 +228,7 @@
   defp converter_for_text({src, context, result, lnb}, renderer) do
     if match = Regex.run(context.rules.text, src) do
       [ match ] = match
-      out = escape(context.options.do_smartypants.(match)) 
+      out = escape(context.options.do_smartypants.(match))
       |> hard_line_breaks(context.options.gfm, renderer)
       { behead(src, match), context, prepend(result,  out), lnb }
     end
@@ -273,7 +273,7 @@
     title      = if title, do: escape(title), else: nil
     link       = convert_each({text, context, set_value(context, []), lnb},
                         Keyword.drop(all_converters(), @linky_converter_names))
-    context.options.renderer.link(href, link.value, title)
+    context.options.renderer.link(href, link.value, title, context)
   end
 
   defp output_footnote_link(context, ref, back_ref, number) do
